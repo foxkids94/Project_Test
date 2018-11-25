@@ -24,7 +24,6 @@ class TabletVC: UITableViewController, Listener, ProcessDelegate {
         cell?.value.text = String(money.value)
     }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         process.delegate = self
@@ -65,7 +64,6 @@ extension TabletVC {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? CellMoney
-        
         cell!.title?.text = DataProvider.shared.allMoney[indexPath.row].title
         cell?.value.text =  String(DataProvider.shared.allMoney[indexPath.row].value)
         return cell!

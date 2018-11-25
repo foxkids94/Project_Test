@@ -9,17 +9,6 @@
 import Foundation
 import Alamofire
 
-class DataProvider { //Хранлка основных настроект
-    static let shared = DataProvider()
-    let baseUrl: URL = URL(string: "https://revolut.duckdns.org/latest?base=")!
-    var startMoney = "EUR"
-    var fullUrl: URL {
-        return URL(string: "\(baseUrl)\(startMoney)")!
-    }
-    private init() {}
-    var allMoney: [Money] = []
-   
-}
 
 
 protocol Publish: class {
@@ -34,6 +23,21 @@ protocol Listener {
 protocol ProcessDelegate {
     func Initialization()
 }
+
+
+
+class DataProvider { //Хранлка основных настроект
+    static let shared = DataProvider()
+    let baseUrl: URL = URL(string: "https://revolut.duckdns.org/latest?base=")!
+    var startMoney = "EUR"
+    var fullUrl: URL {
+        return URL(string: "\(baseUrl)\(startMoney)")!
+    }
+    private init() {}
+    var allMoney: [Money] = []
+   
+}
+
 
 class Process: Publish {
     
@@ -52,16 +56,18 @@ class Process: Publish {
     }
     
     func Download() {
+        DispatchQueue.global().async {
         request(DataProvider.shared.fullUrl).responseJSON { (response) in
             if let valueData = response.result.value as? [String : Any] {
                 if let allMoney = valueData["rates"] as? [String : Double] {
                     for (index, value) in allMoney.enumerated() {
                         let newMoney = Money(index: index, title: value.key, value: value.value)
                         if self.resultBool(money: newMoney) {
-                        DataProvider.shared.allMoney.append(newMoney)
+                            DataProvider.shared.allMoney.append(newMoney)
                             self.delegate?.Initialization()
                         } else {
                             self.sendData(send: newMoney)
+                            }
                         }
                     }
                 }
